@@ -1,0 +1,39 @@
+# Backend Requirements for TrOCR Handwriting Recognition
+
+# Flask and extensions
+Flask==3.0.0
+Flask-CORS==4.0.0
+Werkzeug==3.0.1
+
+# Database
+psycopg2-binary==2.9.9
+
+# Environment variables
+python-dotenv==1.0.0
+
+# Image processing
+Pillow==10.1.0
+opencv-python==4.8.1.78
+numpy==1.24.3
+
+# PDF processing
+PyMuPDF==1.23.8
+pdf2image==1.16.3
+
+# PDF generation
+reportlab==4.0.7
+
+# TrOCR and Transformers
+transformers==4.35.2
+torch==2.1.2
+torchvision==0.16.2
+
+# Additional utilities
+python-dateutil==2.8.2
+
+# Optional: For better logging
+colorlog==6.8.0
+
+# Note: If you don't have CUDA/GPU, torch will use CPU automatically
+# For CPU-only installation:
+# torch==2.1.2+cpu -f https://download.pytorch.org/whl/cpu/torch_stable.html

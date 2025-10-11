@@ -5,7 +5,6 @@ import '../styles/HandwritingRecognition.css';
 
 const HandwritingRecognition = () => {
   const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(null);
   const [recognizedText, setRecognizedText] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -17,36 +16,26 @@ const HandwritingRecognition = () => {
       const fileType = selectedFile.type;
       const fileSize = selectedFile.size / 1024 / 1024; // in MB
 
-      if (fileSize > 10) {
-        setError('File size should not exceed 10MB');
+      if (fileSize > 50) {
+        setError('File size should not exceed 50MB');
         return;
       }
 
-      if (fileType.startsWith('image/') || fileType === 'application/pdf') {
+      // Only accept PDF files
+      if (fileType === 'application/pdf') {
         setFile(selectedFile);
         setError('');
         setSuccess('');
         setRecognizedText('');
-        
-        // Preview for images only
-        if (fileType.startsWith('image/')) {
-          const reader = new FileReader();
-          reader.onloadend = () => setPreview(reader.result);
-          reader.readAsDataURL(selectedFile);
-        } else {
-          setPreview(null);
-        }
       } else {
-        setError('Please upload an image (JPG, PNG) or PDF file');
+        setError('Please upload a PDF file only');
         setFile(null);
-        setPreview(null);
       }
     }
   };
 
   const handleRemoveFile = () => {
     setFile(null);
-    setPreview(null);
     setRecognizedText('');
     setError('');
     setSuccess('');
@@ -57,7 +46,7 @@ const HandwritingRecognition = () => {
     e.preventDefault();
     
     if (!file) {
-      setError('Please select a file to upload');
+      setError('Please select a PDF file to upload');
       return;
     }
 
@@ -141,7 +130,7 @@ const HandwritingRecognition = () => {
       <div className="header">
         <FileText className="header-icon" size={40} />
         <h1>Handwritten Text Recognition</h1>
-        <p>Upload your handwritten images or PDFs and get recognized text instantly</p>
+        <p>Upload your PDF documents with handwritten content and get recognized text instantly</p>
       </div>
 
       <div className="main-content">
@@ -156,33 +145,29 @@ const HandwritingRecognition = () => {
               {!file ? (
                 <>
                   <Upload className="upload-icon" size={48} />
-                  <h3>Drag & Drop your file here</h3>
+                  <h3>Drag & Drop your PDF file here</h3>
                   <p>or</p>
                   <label htmlFor="fileInput" className="file-input-label">
-                    Browse Files
+                    Browse PDF Files
                   </label>
                   <input
                     id="fileInput"
                     type="file"
-                    accept="image/*,.pdf"
+                    accept=".pdf,application/pdf"
                     onChange={handleFileChange}
                     className="file-input"
                   />
-                  <p className="file-info">Supported formats: JPG, PNG, PDF (Max 10MB)</p>
+                  <p className="file-info">Supported format: PDF only (Max 50MB)</p>
                 </>
               ) : (
                 <div className="file-preview">
-                  {preview ? (
-                    <img src={preview} alt="Preview" className="preview-image" />
-                  ) : (
-                    <div className="pdf-preview">
-                      <FileText size={64} />
-                      <p>PDF File</p>
-                    </div>
-                  )}
+                  <div className="pdf-preview">
+                    <FileText size={64} />
+                    <p>PDF Document</p>
+                  </div>
                   <div className="file-details">
                     <p className="file-name">{file.name}</p>
-                    <p className="file-size">{(file.size / 1024).toFixed(2)} KB</p>
+                    <p className="file-size">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                   </div>
                   <button
                     type="button"
@@ -204,12 +189,12 @@ const HandwritingRecognition = () => {
                 {loading ? (
                   <>
                     <Loader2 className="spinner" size={20} />
-                    Processing...
+                    Processing PDF...
                   </>
                 ) : (
                   <>
                     <FileText size={20} />
-                    Recognize Text
+                    Recognize Text from PDF
                   </>
                 )}
               </button>
