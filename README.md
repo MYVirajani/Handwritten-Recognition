@@ -79,6 +79,15 @@ The system follows a multi-stage handwritten text recognition pipeline:
 
 ---
 
+## 🧪 Technologies Used
+- Python
+- OpenCV
+- NumPy
+- PIL
+- Matplotlib
+
+---
+
 ## 📊 Results
 - Improved handwritten text clarity
 - Accurate line segmentation
@@ -97,12 +106,6 @@ The system follows a multi-stage handwritten text recognition pipeline:
 
 ---
 
-## 🧪 Technologies Used
-- Python
-- OpenCV
-- NumPy
-- PIL
-- Matplotlib
 
----
+
 
