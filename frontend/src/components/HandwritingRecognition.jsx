@@ -1,4 +1,3 @@
-// src/components/HandwritingRecognition.jsx
 import React, { useState } from 'react';
 import { Upload, FileText, Download, Loader2, X, AlertCircle, CheckCircle } from 'lucide-react';
 import '../styles/HandwritingRecognition.css';
@@ -21,7 +20,7 @@ const HandwritingRecognition = () => {
         return;
       }
 
-      // Only accept PDF files
+      
       if (fileType === 'application/pdf') {
         setFile(selectedFile);
         setError('');
@@ -134,7 +133,7 @@ const HandwritingRecognition = () => {
       </div>
 
       <div className="main-content">
-        {/* Upload Section */}
+        
         <div className="upload-section">
           <form onSubmit={handleSubmit}>
             <div 
@@ -201,7 +200,7 @@ const HandwritingRecognition = () => {
             )}
           </form>
 
-          {/* Error Message */}
+          
           {error && (
             <div className="message error-message">
               <AlertCircle size={20} />
@@ -209,7 +208,7 @@ const HandwritingRecognition = () => {
             </div>
           )}
 
-          {/* Success Message */}
+          
           {success && (
             <div className="message success-message">
               <CheckCircle size={20} />
@@ -218,7 +217,7 @@ const HandwritingRecognition = () => {
           )}
         </div>
 
-        {/* Results Section */}
+        
         {recognizedText && (
           <div className="results-section">
             <div className="results-header">

@@ -1,4 +1,3 @@
-// src/App.js
 import React from 'react';
 import HandwritingRecognition from './components/HandwritingRecognition';
 import './App.css';
