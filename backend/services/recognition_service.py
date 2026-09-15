@@ -1,17 +1,16 @@
-# backend/services/recognition_service.py
 import time
 import logging
 from PIL import Image
 import io
 import numpy as np
 import cv2
-import fitz  # PyMuPDF
+import fitz  
 from typing import List, Tuple
 import re
 
 logger = logging.getLogger(__name__)
 
-# TrOCR imports
+
 try:
     from transformers import TrOCRProcessor, VisionEncoderDecoderModel
     import torch
@@ -32,12 +31,12 @@ class RecognitionService:
                 self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
                 logger.info(f"Using device: {self.device}")
                 
-                # Load handwritten text model
+                
                 logger.info("Loading handwritten text model...")
                 self.processor_hw = TrOCRProcessor.from_pretrained('microsoft/trocr-base-handwritten')
                 self.model_hw = VisionEncoderDecoderModel.from_pretrained('microsoft/trocr-base-handwritten').to(self.device)
                 
-                # Load printed text model
+                
                 logger.info("Loading printed text model...")
                 self.processor_pr = TrOCRProcessor.from_pretrained('microsoft/trocr-base-printed')
                 self.model_pr = VisionEncoderDecoderModel.from_pretrained('microsoft/trocr-base-printed').to(self.device)
@@ -61,18 +60,18 @@ class RecognitionService:
                     'error': 'TrOCR model not available'
                 }
             
-            # Read file bytes
+            
             with open(file_path, 'rb') as f:
                 file_bytes = f.read()
             
-            # Verify it's a PDF
+            
             if file_type != 'pdf':
                 return {
                     'success': False,
                     'error': 'Only PDF files are accepted'
                 }
             
-            # Convert PDF pages to images
+            
             logger.info("Converting PDF to images...")
             page_images = self.pdf_to_images(file_bytes, dpi=350)
             
@@ -82,7 +81,7 @@ class RecognitionService:
                     'error': 'Failed to extract pages from PDF. The PDF might be corrupted or empty.'
                 }
             
-            # Process all pages/images
+            
             all_pages_text = []
             total_confidence = 0
             total_lines = 0
@@ -93,19 +92,19 @@ class RecognitionService:
                 if img is None:
                     continue
                 
-                # Preprocess image
+                
                 enhanced_img = self.advanced_image_preprocessing(img)
                 if enhanced_img is None:
                     continue
                 
-                # Detect text regions
+                
                 text_regions = self.detect_actual_text_regions(enhanced_img)
                 logger.info(f"Page {page_num + 1}: Detected {len(text_regions)} text regions")
                 
                 page_text_lines = []
                 line_confidences = []
                 
-                # Process each region
+                
                 for i, region in enumerate(text_regions):
                     line_img = self.preprocess_line_for_ocr(enhanced_img, region)
                     
@@ -117,18 +116,18 @@ class RecognitionService:
                             line_confidences.append(line_conf)
                             total_lines += 1
                 
-                # Combine page text
+                
                 page_text = '\n'.join(page_text_lines)
                 all_pages_text.append(page_text)
                 
-                # Calculate page confidence
+                
                 page_confidence = np.mean(line_confidences) if line_confidences else 0.0
                 total_confidence += page_confidence
             
-            # Format final text
+            
             final_text = self.format_extracted_text(all_pages_text)
             
-            # Calculate overall confidence
+            
             overall_confidence = total_confidence / len(page_images) if page_images else 0.0
             
             processing_time = time.time() - start_time
@@ -164,15 +163,15 @@ class RecognitionService:
                 logger.error("Image bytes are empty")
                 return None
             
-            # Convert bytes to PIL Image
+            
             image = Image.open(io.BytesIO(image_bytes))
             logger.info(f"PIL Image loaded: {image.mode}, size: {image.size}")
             
-            # Convert to RGB if necessary
+            
             if image.mode != 'RGB':
                 image = image.convert('RGB')
             
-            # Convert to numpy array
+            
             img_array = np.array(image)
             logger.info(f"Numpy array shape: {img_array.shape}")
             
@@ -238,7 +237,7 @@ class RecognitionService:
         gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY) if len(img.shape) == 3 else img
         h, w = gray.shape
         
-        # Multiple thresholding approaches
+        
         _, binary1 = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
         binary2 = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
                                        cv2.THRESH_BINARY_INV, 21, 8)
@@ -247,7 +246,7 @@ class RecognitionService:
         threshold_val = max(120, min(180, mean_brightness - 30))
         _, binary3 = cv2.threshold(gray, threshold_val, 255, cv2.THRESH_BINARY_INV)
         
-        # Combine binary images
+        
         combined_binary = np.zeros_like(binary1)
         for y in range(h):
             for x in range(w):
@@ -255,14 +254,14 @@ class RecognitionService:
                 if votes >= 2:
                     combined_binary[y, x] = 255
         
-        # Clean noise
+        
         kernel_clean = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2, 2))
         combined_binary = cv2.morphologyEx(combined_binary, cv2.MORPH_OPEN, kernel_clean)
         
-        # Find contours
+        
         contours, _ = cv2.findContours(combined_binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         
-        # Filter and group contours
+        
         valid_contours = []
         for contour in contours:
             area = cv2.contourArea(contour)
@@ -293,7 +292,7 @@ class RecognitionService:
             
             vertical_gap = curr[1] - prev[3]
             
-            if vertical_gap > 5:  # New line threshold
+            if vertical_gap > 5:  
                 line_bbox = self._merge_contours(current_line, img_w, img_h)
                 if line_bbox:
                     lines.append(line_bbox)
@@ -442,7 +441,7 @@ class RecognitionService:
         if len(set(text.replace(' ', ''))) <= 1 and len(text) > 3:
             return ""
         
-        # Clean common OCR artifacts
+        
         text = re.sub(r'\s+', ' ', text)
         
         return text
@@ -455,7 +454,7 @@ class RecognitionService:
         text_clean = text.strip()
         char_count = len(text_clean)
         
-        # Length score
+        
         if char_count < 3:
             length_score = 0.6
         elif 3 <= char_count <= 80:
@@ -463,7 +462,7 @@ class RecognitionService:
         else:
             length_score = 0.8
         
-        # Character composition score
+        
         alpha_chars = sum(1 for c in text_clean if c.isalpha())
         digit_chars = sum(1 for c in text_clean if c.isdigit())
         space_chars = sum(1 for c in text_clean if c.isspace())
@@ -472,14 +471,14 @@ class RecognitionService:
         meaningful_chars = alpha_chars + digit_chars + space_chars + punct_chars
         char_ratio = meaningful_chars / char_count if char_count > 0 else 0
         
-        # Word score
+       
         words = text_clean.split()
         word_score = 0.5
         if words:
             valid_words = sum(1 for word in words if len(word) >= 2)
             word_score = valid_words / len(words) if words else 0.5
         
-        # Calculate final confidence
+        
         final_confidence = (
             length_score * 0.25 +
             char_ratio * 0.25 +

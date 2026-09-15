@@ -1,4 +1,3 @@
-# backend/services/pdf_service.py
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
@@ -19,7 +18,7 @@ class PDFService:
     
     def _setup_custom_styles(self):
         """Setup custom paragraph styles"""
-        # Title style
+        
         self.styles.add(ParagraphStyle(
             name='CustomTitle',
             parent=self.styles['Heading1'],
@@ -30,7 +29,7 @@ class PDFService:
             fontName='Helvetica-Bold'
         ))
         
-        # Subtitle style
+        
         self.styles.add(ParagraphStyle(
             name='CustomSubtitle',
             parent=self.styles['Normal'],
@@ -41,7 +40,7 @@ class PDFService:
             fontName='Helvetica'
         ))
         
-        # Body text style
+        
         self.styles.add(ParagraphStyle(
             name='CustomBody',
             parent=self.styles['Normal'],
@@ -64,7 +63,7 @@ class PDFService:
             str: Path to generated PDF file
         """
         try:
-            # Create temporary file
+            
             temp_file = tempfile.NamedTemporaryFile(
                 delete=False,
                 suffix='.pdf',
@@ -73,7 +72,7 @@ class PDFService:
             pdf_path = temp_file.name
             temp_file.close()
             
-            # Create PDF document
+            
             doc = SimpleDocTemplate(
                 pdf_path,
                 pagesize=A4,
@@ -83,10 +82,10 @@ class PDFService:
                 bottomMargin=72
             )
             
-            # Container for PDF elements
+            
             story = []
             
-            # Add title
+            
             title = Paragraph(
                 "Handwritten Text Recognition Result",
                 self.styles['CustomTitle']
@@ -94,7 +93,7 @@ class PDFService:
             story.append(title)
             story.append(Spacer(1, 12))
             
-            # Add generation date
+            
             date_str = datetime.now().strftime("%B %d, %Y at %I:%M %p")
             subtitle = Paragraph(
                 f"Generated on {date_str}",
@@ -103,7 +102,7 @@ class PDFService:
             story.append(subtitle)
             story.append(Spacer(1, 20))
             
-            # Add separator line
+            
             from reportlab.platypus import HRFlowable
             story.append(HRFlowable(
                 width="100%",
@@ -113,21 +112,20 @@ class PDFService:
                 spaceAfter=20
             ))
             
-            # Add recognized text
-            # Split text into paragraphs and process
+            
             paragraphs = text.split('\n')
             
             for para in paragraphs:
-                if para.strip():  # Only add non-empty paragraphs
-                    # Escape special characters for PDF
+                if para.strip():  
+                    
                     escaped_text = self._escape_text(para.strip())
                     p = Paragraph(escaped_text, self.styles['CustomBody'])
                     story.append(p)
                 else:
-                    # Add small spacer for empty lines
+                    
                     story.append(Spacer(1, 6))
             
-            # Build PDF
+            
             doc.build(story)
             
             logger.info(f"PDF generated successfully: {pdf_path}")
@@ -135,7 +133,7 @@ class PDFService:
             
         except Exception as e:
             logger.error(f"Error generating PDF: {str(e)}")
-            # Clean up if file was created
+            
             if 'pdf_path' in locals() and os.path.exists(pdf_path):
                 try:
                     os.remove(pdf_path)
@@ -153,7 +151,7 @@ class PDFService:
         Returns:
             str: Escaped text
         """
-        # Replace special XML/HTML characters
+        
         text = text.replace('&', '&amp;')
         text = text.replace('<', '&lt;')
         text = text.replace('>', '&gt;')
@@ -172,7 +170,7 @@ class PDFService:
             str: Path to generated PDF file
         """
         try:
-            # Create temporary file
+            
             temp_file = tempfile.NamedTemporaryFile(
                 delete=False,
                 suffix='.pdf',
@@ -192,7 +190,7 @@ class PDFService:
             
             story = []
             
-            # Add title
+            
             title = Paragraph(
                 "Handwritten Text Recognition Result",
                 self.styles['CustomTitle']
@@ -200,7 +198,7 @@ class PDFService:
             story.append(title)
             story.append(Spacer(1, 20))
             
-            # Add images if provided
+            
             if image_paths:
                 from reportlab.platypus import Image as RLImage
                 
@@ -210,7 +208,7 @@ class PDFService:
                         story.append(img)
                         story.append(Spacer(1, 20))
             
-            # Add recognized text
+            
             story.append(Paragraph("Recognized Text:", self.styles['Heading2']))
             story.append(Spacer(1, 12))
             

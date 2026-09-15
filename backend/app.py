@@ -1,4 +1,3 @@
-# backend/app.py
 from flask import Flask
 from flask_cors import CORS
 from config import Config
@@ -10,7 +9,7 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
     
-    # Enable CORS
+    
     CORS(app, resources={
         r"/api/*": {
             "origins": ["http://localhost:3000"],
@@ -19,13 +18,13 @@ def create_app():
         }
     })
     
-    # Create upload directory if it doesn't exist
+    
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     
-    # Initialize database
+    
     init_db()
     
-    # Register blueprints
+    
     app.register_blueprint(recognition_bp, url_prefix='/api')
     
     @app.route('/')

@@ -1,15 +1,13 @@
-# backend/database.py
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from psycopg2 import pool
 from config import Config
 import logging
 
-# Configure logging
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Connection pool
 connection_pool = None
 
 def init_db():
@@ -17,7 +15,7 @@ def init_db():
     global connection_pool
     
     try:
-        # Create connection pool
+        
         connection_pool = psycopg2.pool.SimpleConnectionPool(
             1, 20,
             host=Config.DB_HOST,
@@ -30,7 +28,7 @@ def init_db():
         if connection_pool:
             logger.info("Database connection pool created successfully")
             
-            # Create tables
+            
             create_tables()
         else:
             logger.error("Failed to create connection pool")
@@ -61,7 +59,7 @@ def create_tables():
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        # Create uploads table
+        
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS uploads (
                 id SERIAL PRIMARY KEY,
@@ -73,7 +71,7 @@ def create_tables():
             )
         """)
         
-        # Create recognition_results table
+        
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS recognition_results (
                 id SERIAL PRIMARY KEY,

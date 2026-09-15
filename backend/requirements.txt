@@ -1,39 +1,27 @@
-# Backend Requirements for TrOCR Handwriting Recognition (Python 3.12 Compatible)
 
-# Flask and extensions
 Flask==3.0.3
 Flask-CORS==4.0.0
 Werkzeug==3.0.3
 
-# Database
 psycopg2-binary==2.9.9
 
-# Environment variables
 python-dotenv==1.0.1
 
-# Image processing
 Pillow==10.3.0
 opencv-python==4.9.0.80
 numpy==1.26.4
 
-# PDF processing
 PyMuPDF==1.24.1
 
-# PDF generation
 reportlab==4.2.0
 
-# TrOCR and Transformers (Python 3.12 compatible versions)
 transformers==4.40.0
 safetensors==0.4.3
 tokenizers==0.19.1
 huggingface-hub==0.23.0
 
-# Additional utilities
 python-dateutil==2.9.0
 tqdm==4.66.4
 
-# Optional: For better logging
 colorlog==6.8.2
 
-# Note: Install PyTorch separately with this command:
-# pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
